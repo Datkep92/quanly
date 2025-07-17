@@ -8,6 +8,131 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #2c3e50;
+      padding: 10px;
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    header button:hover {
+      background-color: #2980b9;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: #34495e;
+      color: white;
+      padding: 15px;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar.hide-on-mobile {
+      transform: translateX(-100%);
+    }
+
+    .sidebar.show-on-mobile {
+      transform: translateX(0);
+    }
+
+    .sidebar h3 {
+      margin-top: 0;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar li {
+      padding: 10px;
+      cursor: pointer;
+      border-bottom: 1px solid #4a6278;
+    }
+
+    .sidebar li:hover,
+    .sidebar li.active {
+      background-color: #4a6278;
+    }
+
+    .main {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    #mainContent {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      min-height: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        z-index: 1000;
+        transform: translateX(-100%);
+      }
+
+      .sidebar.show-on-mobile {
+        transform: translateX(0);
+      }
+    }
+
+    .compact-mode .tonkho-table .col-maKH,
+    .compact-mode .tonkho-table .col-phanloai,
+    .compact-mode .hoadon-table .col-tontruoc,
+    .compact-mode .hoadon-table .col-tonsau {
+      display: none;
+    }
+
+    .compact-mode table td,
+    .compact-mode table th {
+      padding: 4px;
+      font-size: 12px;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -15,17 +140,8 @@
     <button onclick="document.getElementById('zipFile').click()">📁 Chọn file</button>
     <input type="file" id="zipFile" accept=".zip" multiple style="display: none;">
     <button onclick="clearAll()">🗑️ Xoá toàn bộ</button>
-    <button onclick="showLogHistory()">📝 Xem lỗi gần đây</button>
     <button onclick="undoAction()">🔁 Undo</button>
     <button onclick="searchHKD()">🔍 Tìm kiếm</button>
-    <button onclick="showGitHubTokenPopup()">🔐 Nhập GitHub Token</button>
-    <input id="tokenInput" placeholder="Nhập GitHub token..." />
-    <button onclick="localStorage.setItem('github_token', document.getElementById('tokenInput').value)">
-      💾 Lưu token
-    </button>
-    <button onclick="gitbu()" style="padding: 8px 16px; background-color: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer;">
-      🗑️ Xóa tất cả file trên GitHub
-    </button>
   </header>
 
   <div class="container">
@@ -41,13 +157,12 @@
     </div>
   </div>
 
-  <script src="js/core_utils_hkd.js"></script>
-  <script src="js/invoice_parser.js"></script>
-  <script src="js/inventory_module.js"></script>
   <script>
+    // Tự động bật compact-mode nếu là mobile
     if (window.innerWidth < 768) {
       document.body.classList.add('compact-mode');
     }
+
     function toggleSidebarMobile(forceClose = false) {
       const sidebar = document.getElementById('hkdList');
       if (forceClose || sidebar.classList.contains('show-on-mobile')) {
@@ -58,13 +173,14 @@
         sidebar.classList.add('show-on-mobile');
       }
     }
+
+    // Tự động đóng sidebar khi chọn 1 HKD
     document.addEventListener('click', function (e) {
       if (e.target.closest('#businessList li')) {
         if (window.innerWidth < 768) toggleSidebarMobile(true);
       }
     });
-<script src="js/core_utils_hkd.js"></script>
-<script src="js/invoice_parser.js"></script>
-<script src="js/inventory_module.js"></script>
+  </script>
+  <script src="modum/script.js"></script>
 </body>
 </html>
